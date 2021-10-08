@@ -1,5 +1,9 @@
 package com.cocoamu.flowable.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 import org.flowable.engine.ProcessEngine;
@@ -163,19 +167,17 @@ public class FlowService {
         return editorJsonNode.toString();
     }
 
-    public String getBpmnXml(String processInstanceId){
-//        ModelService modelService = new ModelServiceImpl();
-//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-//        Model model = modelService.getModel(processInstance.getDeploymentId());
-//        byte[] b = modelService.getBpmnXML(model);
-//        return new String(b);
-        return "";
+    public String getBpmnXmlByPid(String ProcessDefinitionId) throws JsonProcessingException {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(ProcessDefinitionId);
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
+        return new String(bpmnBytes);
     }
 
 
-//    public Object saveModelJSON(JsonNode modelNode){
-//        BpmnJsonConverter converter = new BpmnJsonConverter();
-//        BpmnModel bpmnModel = converter.convertToBpmnModel(modelNode);
-//        org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
-//    }
+    public String getBpmnXmlByJson(String bpmJson) throws JsonProcessingException {
+        ObjectNode modelNode = (ObjectNode) new ObjectMapper().readTree(bpmJson);
+        BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
+        return new String(bpmnBytes);
+    }
 }

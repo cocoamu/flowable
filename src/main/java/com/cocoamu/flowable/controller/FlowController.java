@@ -3,6 +3,7 @@ package com.cocoamu.flowable.controller;
 import com.cocoamu.flowable.service.FlowService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -90,14 +91,24 @@ public class FlowController {
         return flowService.getBpmnJson(ProcessDefinitionId);
     }
 
-//    /**
-//     * 根据流程定义id获取xml格式定义
-//     * @param ProcessDefinitionId 流程定义id
-//     * @throws Exception
-//     */
-//    @RequestMapping(value = "/getBpmnXml")
-//    public String getBpmnXml(String ProcessDefinitionId) throws Exception {
-//        return flowService.getBpmnXml(ProcessDefinitionId);
-//    }
+    /**
+     * 根据流程定义id获取xml格式定义
+     * @param ProcessDefinitionId 流程定义id
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getBpmnXmlByPid")
+    public String getBpmnXmlByPid(String ProcessDefinitionId) throws Exception {
+        return flowService.getBpmnXmlByPid(ProcessDefinitionId);
+    }
+
+    /**
+     * 根据流程定义id获取xml格式定义
+     * @param bpmJson json格式定义
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getBpmnXmlByJson")
+    public String getBpmnXml(@RequestBody String bpmJson) throws Exception {
+        return flowService.getBpmnXmlByJson(bpmJson);
+    }
 
 }
