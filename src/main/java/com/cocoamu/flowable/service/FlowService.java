@@ -1,6 +1,7 @@
 package com.cocoamu.flowable.service;
 
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.RepositoryService;
@@ -45,6 +46,7 @@ public class FlowService {
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
         taskService.complete(task.getId());
         //指定下一个审批人，也可以在xml或监听器里面指定
+        //类似：<userTask id="holidayApprovedTask" name="Holiday approved" flowable:assignee="${employee}"/>
         Task task2 = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
         taskService.setAssignee(task2.getId(),"boss");
         return processInstance;
@@ -74,7 +76,7 @@ public class FlowService {
      * @return
      */
     public List<Map<String,Object>> getTaskByAssignee(String assignee) {
-        List<Task> taskList = taskService.createTaskQuery().taskAssignee(assignee).list();
+        List<Task> taskList = taskService.createTaskQuery().taskAssignee(assignee).orderByTaskCreateTime().desc().list();;
         List<Map<String,Object>> mapList = new ArrayList<>();
         for (Task task : taskList) {
             Map<String,Object> resultMap = new HashMap<>();
@@ -147,4 +149,33 @@ public class FlowService {
             }
         }
     }
+
+    /**
+     * 根据流程定义id获取jspn格式定义
+     * @param ProcessDefinitionId 流程定义id
+     * @return
+     */
+    public String getBpmnJson(String ProcessDefinitionId){
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(ProcessDefinitionId);
+        BpmnJsonConverter converter = new BpmnJsonConverter();
+        com.fasterxml.jackson.databind.node.ObjectNode editorJsonNode = converter.convertToJson(bpmnModel);
+
+        return editorJsonNode.toString();
+    }
+
+    public String getBpmnXml(String processInstanceId){
+//        ModelService modelService = new ModelServiceImpl();
+//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+//        Model model = modelService.getModel(processInstance.getDeploymentId());
+//        byte[] b = modelService.getBpmnXML(model);
+//        return new String(b);
+        return "";
+    }
+
+
+//    public Object saveModelJSON(JsonNode modelNode){
+//        BpmnJsonConverter converter = new BpmnJsonConverter();
+//        BpmnModel bpmnModel = converter.convertToBpmnModel(modelNode);
+//        org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+//    }
 }
