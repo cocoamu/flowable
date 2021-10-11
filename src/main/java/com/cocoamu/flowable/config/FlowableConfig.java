@@ -1,7 +1,8 @@
 package com.cocoamu.flowable.config;
 
+import com.cocoamu.flowable.function.VariableCustomExpressionFunction;
 import com.cocoamu.flowable.util.FlowableUitls;
-import org.flowable.engine.ProcessEngineConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 
 @Configuration
+@Slf4j
 public class FlowableConfig implements EngineConfigurationConfigurer<SpringProcessEngineConfiguration> {
 
     @Autowired
@@ -27,5 +29,19 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
         engineConfiguration.setActivityFontName("宋体");
         engineConfiguration.setLabelFontName("宋体");
         engineConfiguration.setAnnotationFontName("宋体");
+        //配置扩展表达式解析方法
+        initExpressFunction(engineConfiguration);
+    }
+
+    /**
+     *
+     *  配置扩展表达式解析方法
+     * @param springProcessEngineConfiguration
+     */
+    private void initExpressFunction(SpringProcessEngineConfiguration springProcessEngineConfiguration) {
+        log.info("配置扩展表达式解析方法");
+        String variableScopeName = "execution";
+        springProcessEngineConfiguration.initShortHandExpressionFunctions();
+        springProcessEngineConfiguration.getShortHandExpressionFunctions().add(new VariableCustomExpressionFunction(variableScopeName));
     }
 }

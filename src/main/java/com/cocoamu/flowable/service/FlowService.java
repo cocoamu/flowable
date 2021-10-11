@@ -38,6 +38,8 @@ public class FlowService {
     @Autowired
     private TaskService taskService;
 
+
+
     /**
      * 启动工作流
      * @param employee
@@ -46,6 +48,7 @@ public class FlowService {
     public ProcessInstance startProcess(String employee) {
         Map<String, Object> map = new HashMap();
         map.put("employee", employee);
+        map.put("cusExpress", 1);
         ProcessInstance processInstance =  runtimeService.startProcessInstanceByKey("holidayRequest", map);
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
         taskService.complete(task.getId());
