@@ -1,6 +1,8 @@
 package com.cocoamu.flowable.controller;
 
 import com.cocoamu.flowable.service.FlowService;
+import com.cocoamu.flowable.service.MyModelService;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,16 +20,30 @@ public class FlowController {
     @Autowired
     private FlowService flowService;
 
+    @Autowired
+    private MyModelService modelService;
+
+    /**
+     * 存储模型json
+     *
+     * @param modelNode
+     * @return
+     */
+    @RequestMapping("/saveModelJSON")
+    public String saveModelJSON(@RequestBody JsonNode modelNode) {
+        return modelService.saveModelJSON(modelNode);
+    }
+
     /**
      * 开始流程
      *
-     * @param employee 申请人名称
+     * @param processKey 流程key
      * @return
      */
     @RequestMapping(value = "/start")
-    public Map<String,Object> startProcessInstance(String employee) {
+    public Map<String,Object> startProcessInstance(String processKey) {
         Map<String,Object> result = new HashMap<>();
-        ProcessInstance processInstance = flowService.startProcess(employee);
+        ProcessInstance processInstance = flowService.startProcess(processKey);
         result.put("result：","流程启动成功");
         result.put("实例id：",processInstance.getProcessInstanceId());
         result.put("流程定义id：",processInstance.getProcessDefinitionId());

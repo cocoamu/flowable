@@ -18,6 +18,9 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
     @Autowired
     ApplicationContext applicationContext;
 
+    /**
+     * 初始化spring上下文
+     */
     @PostConstruct
     public void init() {
         FlowableUitls.setApplicationContext(applicationContext);

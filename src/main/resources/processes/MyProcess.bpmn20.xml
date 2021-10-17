@@ -15,10 +15,10 @@
         <endEvent id="passEnd" name="结束1"></endEvent>
         <sequenceFlow id="sid-C81C544C-C606-4984-90C5-A0893989F216" sourceRef="approvePass" targetRef="passEnd"></sequenceFlow>
         <sequenceFlow id="sid-28FC12A2-FA9D-49E4-A3BA-9DFAE32514BA" name="不通过" sourceRef="decision" targetRef="approveReject">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:custom(cusExpress)==false}]]></conditionExpression>
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:custom("aaa$$bbb$$cc")==false}]]></conditionExpression>
         </sequenceFlow>
         <sequenceFlow id="sid-9FD34362-2FFB-48C3-ABFB-032F0D81B6E7" name="通过" sourceRef="decision" targetRef="approvePass">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:custom(cusExpress)==true}]]></conditionExpression>
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${var:custom("aaa$$bbb$$cc")==true}]]></conditionExpression>
         </sequenceFlow>
     </process>
     <bpmndi:BPMNDiagram id="BPMNDiagram_holidayRequest">
