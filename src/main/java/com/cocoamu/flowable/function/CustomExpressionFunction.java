@@ -1,25 +1,18 @@
 package com.cocoamu.flowable.function;
 
-import com.cocoamu.flowable.constants.MyFlowableConstants;
-import lombok.extern.slf4j.Slf4j;
+import com.cocoamu.flowable.constants.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.impl.el.function.AbstractFlowableVariableExpressionFunction;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.variable.api.delegate.VariableScope;
 
-/**
- * @ClassName: VariableQueryExpressionFunction
- * @Author: ren
- * @Description:
- * @CreateTime： 2020/3/19 0019 下午 9:37
- * @Version：
- **/
-@Slf4j
-public class VariableCustomExpressionFunction extends AbstractFlowableVariableExpressionFunction {
+
+public class CustomExpressionFunction extends AbstractFlowableVariableExpressionFunction {
 
 
-    public VariableCustomExpressionFunction(String variableScopeName) {
-        super(variableScopeName, "custom");
+    public CustomExpressionFunction(String variableScopeName) {
+        //绑定调用函数名跟实际处理的方法名，这边的custom需要在这个类里面有一个静态的custom方法
+        super(variableScopeName, "execution");
     }
 
     @Override
@@ -28,15 +21,14 @@ public class VariableCustomExpressionFunction extends AbstractFlowableVariableEx
     }
 
     /**
-     * 实现自定义函数,与上面构造方法中的函数名相同
+     * 实现自定义函数,这边的方法名需要与上面构造方法中的函数名相同
      * @param variableScope
      * @param variableNames
      * @return
      */
-    public static boolean custom(VariableScope variableScope, String variableNames) {
-        log.info("处理特殊表达式:custom");
+    public static boolean execution(VariableScope variableScope, String variableNames) {
         //获取所有参数名数组
-        String[] variables = StringUtils.split(variableNames, MyFlowableConstants.SEPARATOR);
+        String[] variables = StringUtils.split(variableNames, Constants.SEPARATOR);
         //获取第一个参数名，如果只有一个参数直接使用variableNames就可以
         String variableName1 = variables[0];
 

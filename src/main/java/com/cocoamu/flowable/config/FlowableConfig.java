@@ -1,6 +1,6 @@
 package com.cocoamu.flowable.config;
 
-import com.cocoamu.flowable.function.VariableCustomExpressionFunction;
+import com.cocoamu.flowable.function.CustomExpressionFunction;
 import com.cocoamu.flowable.util.FlowableUitls;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.spring.SpringProcessEngineConfiguration;
@@ -45,6 +45,6 @@ public class FlowableConfig implements EngineConfigurationConfigurer<SpringProce
         log.info("配置扩展表达式解析方法");
         String variableScopeName = "execution";
         springProcessEngineConfiguration.initShortHandExpressionFunctions();
-        springProcessEngineConfiguration.getShortHandExpressionFunctions().add(new VariableCustomExpressionFunction(variableScopeName));
+        springProcessEngineConfiguration.getShortHandExpressionFunctions().add(new CustomExpressionFunction(variableScopeName));
     }
 }
