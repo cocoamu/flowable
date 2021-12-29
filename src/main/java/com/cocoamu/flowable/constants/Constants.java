@@ -5,7 +5,7 @@ package com.cocoamu.flowable.constants;
  */
 public final class Constants {
 
-    public static final String CUSTOM_ATTRIBUTES_USER_SELECTOR = "userSelector";
+    public static final String CUSTOM_ATTRIBUTES_USER_SELECTOR = "userselector";
     /**
      * 函数分隔符
      */

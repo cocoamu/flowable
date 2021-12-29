@@ -5,9 +5,9 @@ import org.flowable.bpmn.model.ExtensionAttribute;
 public class ExtensionAttributeUtils {
     public static ExtensionAttribute generate(String key, String val) {
         ExtensionAttribute ea = new ExtensionAttribute();
-        ea.setNamespace("http://exexm.com.cn");
+        ea.setNamespace("http://flowable.org/bpmn");
         ea.setName(key);
-        ea.setNamespacePrefix("customize");
+        ea.setNamespacePrefix("custom");
         ea.setValue(val);
         return ea;
     }

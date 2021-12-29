@@ -22,8 +22,9 @@ public interface MyTaskService {
      * 任务审批
      * @param taskId 任务id
      * @param approved 审批结果 0通过 1拒绝
+     * @param comment 审批意见
      */
-    void completeTask(String taskId, Integer approved);
+    void complete(String taskId, Integer approved,String comment);
 
     /**
      * 多人会签审批

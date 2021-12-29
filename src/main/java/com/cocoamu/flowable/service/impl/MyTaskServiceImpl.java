@@ -53,13 +53,14 @@ public class MyTaskServiceImpl implements MyTaskService {
     }
 
     @Override
-    public void completeTask(String taskId, Integer approved) {
+    public void complete(String taskId, Integer approved,String comment) {
         TaskEntity taskEntity = (TaskEntity) taskService.createTaskQuery().taskId(taskId).singleResult();
         if (taskEntity == null) {
             throw new RuntimeException("任务不存在");
         }
         Map<String, Object> map = new HashMap();
         map.put("approved",approved);
+        map.put("comment",comment);
         taskService.complete(taskId,map);
     }
 

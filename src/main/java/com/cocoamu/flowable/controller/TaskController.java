@@ -1,6 +1,5 @@
 package com.cocoamu.flowable.controller;
 
-import com.cocoamu.flowable.enums.ReturnCode;
 import com.cocoamu.flowable.service.MyTaskService;
 import com.cocoamu.flowable.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +43,12 @@ public class TaskController {
      *
      * @param taskId   任务id
      * @param approved 审批结果 0通过 1拒绝
+     * @param comment 审批意见
      * @return
      */
     @RequestMapping(value = "/complete")
-    public String completeTask(String taskId, Integer approved) {
-        myTaskService.completeTask(taskId, approved);
+    public String completeTask(String taskId, Integer approved,String comment) {
+        myTaskService.complete(taskId, approved,comment);
         return approved == 0 ? "审批通过" : "审批不通过";
     }
 
@@ -73,9 +73,9 @@ public class TaskController {
      * @throws Exception
      */
     @RequestMapping(value = "/beforeAddSignTask")
-    public ReturnVo beforeAddSignTask(String taskId, String taskName, String assignee) throws Exception {
+    public ReturnVo beforeAddSignTask(String taskId, String taskName, String assignee) {
         myTaskService.beforeAddSignTask(taskId,taskName,assignee);
-        return new ReturnVo(ReturnCode.SUCCESS,"前加签成功");
+        return  ReturnVo.sucess("前加签成功");
     }
 
 
@@ -88,8 +88,8 @@ public class TaskController {
      * @throws Exception
      */
     @RequestMapping(value = "/afterAddSignTask")
-    public ReturnVo afterAddSignTask(String taskId,String taskName,String assignee) throws Exception {
+    public ReturnVo afterAddSignTask(String taskId,String taskName,String assignee) {
         myTaskService.afterAddSignTask(taskId,taskName,assignee);
-        return new ReturnVo(ReturnCode.SUCCESS,"后加签成功");
+        return ReturnVo.sucess("后加签成功");
     }
 }

@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,4 +115,19 @@ public class MyProcessServiceImpl implements MyProcessService {
         byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
         return new String(bpmnBytes);
     }
+
+    @Override
+    public String getBpmnJsonByXml(String bpmXml) throws UnsupportedEncodingException, XMLStreamException {
+        // xml转bpmnModel
+        InputStream bpmnStream = new ByteArrayInputStream(bpmXml.getBytes());// 获取bpmn2.0规范的xml
+        XMLInputFactory xif = XMLInputFactory.newInstance();
+        InputStreamReader in = new InputStreamReader(bpmnStream, "UTF-8");
+        XMLStreamReader xtr = xif.createXMLStreamReader(in);
+        // 然后转为bpmnModel
+        BpmnModel bpmnModel = new BpmnXMLConverter().convertToBpmnModel(xtr);
+        // bpmnModel转json
+        ObjectNode objectNode = new BpmnJsonConverter().convertToJson(bpmnModel);
+        return objectNode.toString();
+    }
+
 }

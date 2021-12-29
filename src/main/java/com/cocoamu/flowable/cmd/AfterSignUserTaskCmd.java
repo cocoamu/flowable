@@ -1,7 +1,8 @@
 package com.cocoamu.flowable.cmd;
 
-import com.cocoamu.flowable.constants.Constants;
-import com.cocoamu.flowable.util.ExtensionAttributeUtils;
+import com.cocoamu.flowable.dto.Comment;
+import com.cocoamu.flowable.enums.CommentTypeEnum;
+import com.cocoamu.flowable.service.MyCommentService;
 import com.cocoamu.flowable.util.FlowableUitls;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.model.Process;
@@ -22,7 +23,6 @@ import org.flowable.engine.impl.util.ProcessDefinitionUtil;
 import org.flowable.task.service.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,16 +32,13 @@ import java.util.List;
 public class AfterSignUserTaskCmd extends AbstractDynamicInjectionCmd implements Command<Void> {
     //流程实例id
     protected String processInstanceId;
-
     //后加签的节点信息
     private DynamicUserTaskBuilder signUserTaskBuilder;
-
     //当前流程节点的id
     private String taskId;
-
     private ExecutionEntity currentExecutionEntity;
-
     private FlowElement currentFlowElemet;
+    private MyCommentService myCommentService = FlowableUitls.getApplicationContext().getBean(MyCommentService.class);
 
     public AfterSignUserTaskCmd(String processInstanceId, DynamicUserTaskBuilder signUserTaskBuilder, String taskId) {
         this.processInstanceId = processInstanceId;
@@ -74,29 +71,8 @@ public class AfterSignUserTaskCmd extends AbstractDynamicInjectionCmd implements
         signUserTaskBuilder.setDynamicTaskId(id);
         addUserTask.setId(id);
         addUserTask.setName(signUserTaskBuilder.getName());
+        addUserTask.setAssignee(signUserTaskBuilder.getAssignee());
 
-        String[] assigns = signUserTaskBuilder.getAssignee().split(",");
-
-        //判断前端传过来的受理人是单个还是多个，如果是单个直接setAssignee就行，如果是多个则把这个任务设置成会签节点
-        if (assigns.length > 1) {
-            MultiInstanceLoopCharacteristics multiInstanceLoopCharacteristics = new MultiInstanceLoopCharacteristics();
-            //设置并行 Sequential是串行的意思设置false就是并行
-            multiInstanceLoopCharacteristics.setSequential(false);
-            //实例数根据前端传过来的人数来定
-            multiInstanceLoopCharacteristics.setLoopCardinality(String.valueOf(assigns.length));
-            //审批人集合参数
-            multiInstanceLoopCharacteristics.setInputDataItem("assigneeList");
-            //迭代集合
-            multiInstanceLoopCharacteristics.setElementVariable("assignee");
-            addUserTask.setCandidateUsers(Arrays.asList(assigns));
-            //设置多实例属性
-            addUserTask.setLoopCharacteristics(multiInstanceLoopCharacteristics);
-            addUserTask.setAssignee("${assignee}");
-
-        } else {
-            ExtensionAttribute ea1 = ExtensionAttributeUtils.generate(Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR + "_key", signUserTaskBuilder.getAssignee());
-            addUserTask.addAttribute(ea1);
-        }
         //设置执行监听器
         addUserTask.setExecutionListeners(FlowableUitls.getExecuteListener());
         //设置任务监听器
@@ -156,6 +132,13 @@ public class AfterSignUserTaskCmd extends AbstractDynamicInjectionCmd implements
             if (taskEntity.getTaskDefinitionKey().equals(currentFlowElemet.getId())) {
                 taskService.deleteTask(taskEntity, false);
             }
+            Comment comment = new Comment();
+            comment.setProcessInstanceId(taskEntity.getProcessInstanceId());
+            comment.setTaskId(taskEntity.getId());
+            comment.setType(CommentTypeEnum.PASS.getCode());
+            comment.setMessage("审批通过");
+            comment.setUserId(taskEntity.getAssignee());
+            myCommentService.addComment(comment);
         }
         //设置活动后的节点
         UserTask userTask = (UserTask) bpmnModel.getProcessById(processDefinitionEntity.getKey()).getFlowElement(signUserTaskBuilder.getId());

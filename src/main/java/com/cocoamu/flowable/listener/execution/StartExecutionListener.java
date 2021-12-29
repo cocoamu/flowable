@@ -1,8 +1,13 @@
 package com.cocoamu.flowable.listener.execution;
 
+import com.cocoamu.flowable.constants.Constants;
+import com.cocoamu.flowable.util.FlowableUitls;
+import org.flowable.bpmn.model.ExtensionAttribute;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
+
+import java.util.List;
 
 
 public class StartExecutionListener implements ExecutionListener {
@@ -11,8 +16,7 @@ public class StartExecutionListener implements ExecutionListener {
 
     public void notify(DelegateExecution execution) {
         UserTask userTask = (UserTask) execution.getCurrentFlowElement();
-//        List<ExtensionAttribute> customProperty = FlowableUitls.getCustomProperty(userTask.getId(), execution.getProcessDefinitionId(), Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR + "_key");
-        System.out.println("task name:"+ userTask.getName());
+        List<ExtensionAttribute> customProperty = FlowableUitls.getCustomProperty(userTask.getId(), execution.getProcessDefinitionId(), Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR);
+        System.out.println(execution.getCurrentFlowElement().getName());
     }
-
 }

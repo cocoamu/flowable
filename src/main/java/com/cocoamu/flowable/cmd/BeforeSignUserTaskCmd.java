@@ -73,6 +73,7 @@ public class BeforeSignUserTaskCmd extends AbstractDynamicInjectionCmd implement
         signUserTaskBuilder.setDynamicTaskId(id);
         addUserTask.setId(id);
         addUserTask.setName(signUserTaskBuilder.getName());
+        addUserTask.setAssignee(signUserTaskBuilder.getAssignee());
 
         //设置自定义属性 这个可以在监听器里面解析出来搞一些事
         ExtensionAttribute ea1 = ExtensionAttributeUtils.generate(Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR + "_key", signUserTaskBuilder.getAssignee());

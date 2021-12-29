@@ -6,6 +6,6 @@ import org.flowable.task.service.delegate.DelegateTask;
 public class CreateTaskListener implements TaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
-        System.out.printf("task id:"+ delegateTask.getId());
+        System.out.printf("task id:"+ delegateTask.getName());
     }
 }

@@ -1,27 +1,28 @@
 package com.cocoamu.flowable.vo;
 
-import com.cocoamu.flowable.enums.ReturnCode;
-import lombok.Getter;
+import com.cocoamu.flowable.enums.ReturnCodeEnum;
+import lombok.Data;
 
 import java.io.Serializable;
 
-@Getter
+@Data
 public class ReturnVo<T> implements Serializable {
 
-    private ReturnCode returnCode;
+    private ReturnCodeEnum returnCode;
 
     private T data;
 
-    public ReturnCode getReturnCode() {
-        return returnCode;
+    public static <T> ReturnVo sucess(T data) {
+        ReturnVo<T> response = new ReturnVo<>();
+        response.returnCode = ReturnCodeEnum.SUCCESS;
+        response.data = data;
+        return response;
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public ReturnVo(ReturnCode returnCode, T data) {
-        this.returnCode = returnCode;
-        this.data = data;
+    public static <T> ReturnVo fail(T data) {
+        ReturnVo<T> response = new ReturnVo<>();
+        response.returnCode = ReturnCodeEnum.FAIL;
+        response.data = data;
+        return response;
     }
 }

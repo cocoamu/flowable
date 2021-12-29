@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.flowable.engine.runtime.ProcessInstance;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamException;
+import java.io.UnsupportedEncodingException;
 
 public interface MyProcessService {
 
@@ -42,5 +44,15 @@ public interface MyProcessService {
      * @return
      * @throws JsonProcessingException
      */
-    String getBpmnXmlByJson(String bpmJson) throws JsonProcessingException;
+    String getBpmnXmlByJson(String bpmJson) throws Exception;
+
+    /**
+     * 根据xml定义获取json定义
+     * @param bpmXml 流程xml定义
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws XMLStreamException
+     */
+    String getBpmnJsonByXml(String bpmXml) throws UnsupportedEncodingException, XMLStreamException;
+
 }

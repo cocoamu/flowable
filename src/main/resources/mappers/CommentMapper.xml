@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cocoamu.flowable.mapper.CommentMapper">
+    <select id="getCommentListByProcessId" parameterType="java.lang.String"
+            resultType="com.cocoamu.flowable.dto.Comment">
+        SELECT
+            t1.ID_,
+            t1.TYPE_ AS type,
+            t1.TIME_  AS time,
+        t1.USER_ID_ AS userId,
+        t1.TASK_ID_ AS taskId,
+        t1.PROC_INST_ID_ AS processInstanceId,
+        t1.MESSAGE_ AS message
+        FROM
+            act_hi_comment t1
+        WHERE
+            t1.PROC_INST_ID_ = #{value} and ACTION_='AddComment'
+        ORDER BY
+            t1.TIME_ ASC
+    </select>
+
+    <select id="getCommentListByTaskId" parameterType="java.lang.String"
+            resultType="com.cocoamu.flowable.dto.Comment">
+        SELECT
+            t1.ID_,
+            t1.TYPE_ AS type,
+            t1.TIME_  AS time,
+        t1.USER_ID_ AS userId,
+        t1.TASK_ID_ AS taskId,
+        t1.PROC_INST_ID_ AS processInstanceId,
+        t1.MESSAGE_ AS message
+        FROM
+        act_hi_comment t1
+        WHERE
+        ACTION_='AddComment'
+        AND t1.TASK_ID_ = #{value}
+        ORDER BY
+        t1.TIME_ ASC
+    </select>
+</mapper>

@@ -29,6 +29,7 @@ public class ProcessController {
         Map<String,Object> result = new HashMap<>();
         ProcessInstance processInstance = myProcessService.startProcess(processKey);
         result.put("processInstanceId：",processInstance.getProcessInstanceId());
+        result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
         return result;
     }
 
@@ -65,12 +66,22 @@ public class ProcessController {
     }
 
     /**
-     * 根据流程定义id获取xml格式定义
+     * 模型json格式转xml格式
      * @param bpmJson json格式定义
      * @throws Exception
      */
     @RequestMapping(value = "/getBpmnXmlByJson")
     public String getBpmnXml(@RequestBody String bpmJson) throws Exception {
         return myProcessService.getBpmnXmlByJson(bpmJson);
+    }
+
+    /**
+     * 模型xml格式转json格式
+     * @param bpmJson xml格式定义
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getBpmnJsonByXml")
+    public String getBpmnJsonByXml(@RequestBody String bpmJson) throws Exception {
+        return myProcessService.getBpmnJsonByXml(bpmJson);
     }
 }
