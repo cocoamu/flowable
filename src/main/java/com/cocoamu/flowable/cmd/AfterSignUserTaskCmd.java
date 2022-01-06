@@ -1,8 +1,10 @@
 package com.cocoamu.flowable.cmd;
 
+import com.cocoamu.flowable.constants.Constants;
 import com.cocoamu.flowable.dto.Comment;
 import com.cocoamu.flowable.enums.CommentTypeEnum;
 import com.cocoamu.flowable.service.MyCommentService;
+import com.cocoamu.flowable.util.ExtensionAttributeUtils;
 import com.cocoamu.flowable.util.FlowableUitls;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.model.Process;
@@ -72,6 +74,10 @@ public class AfterSignUserTaskCmd extends AbstractDynamicInjectionCmd implements
         addUserTask.setId(id);
         addUserTask.setName(signUserTaskBuilder.getName());
         addUserTask.setAssignee(signUserTaskBuilder.getAssignee());
+
+        //设置自定义属性
+        ExtensionAttribute ea1 = ExtensionAttributeUtils.generate(Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR, signUserTaskBuilder.getAssignee());
+        addUserTask.addAttribute(ea1);
 
         //设置执行监听器
         addUserTask.setExecutionListeners(FlowableUitls.getExecuteListener());
@@ -146,6 +152,9 @@ public class AfterSignUserTaskCmd extends AbstractDynamicInjectionCmd implements
         currentExecutionEntity.setCurrentFlowElement(userTask);
 
         Context.getAgenda().planContinueProcessOperation(currentExecutionEntity);
+
+        TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(taskId).singleResult();
+        System.out.printf(task.getId());
     }
 
 }

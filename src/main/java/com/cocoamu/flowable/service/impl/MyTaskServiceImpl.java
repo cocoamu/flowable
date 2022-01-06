@@ -86,7 +86,7 @@ public class MyTaskServiceImpl implements MyTaskService {
         //加签节点信息
         DynamicUserTaskBuilder taskBuilder = new DynamicUserTaskBuilder();
         taskBuilder.setName(taskName);
-        taskBuilder.setId("UserTaskAdd"+ UUID.randomUUID().toString().replaceAll("-",""));
+        taskBuilder.setId("AddBeforeSign"+ UUID.randomUUID().toString().replaceAll("-",""));
         taskBuilder.setAssignee(assignee);
         TaskEntity taskEntity = (TaskEntity) taskService.createTaskQuery().taskId(taskId).singleResult();
         processEngine.getManagementService().executeCommand(new BeforeSignUserTaskCmd(taskEntity.getProcessInstanceId(),taskBuilder,taskEntity.getId()));
@@ -97,7 +97,7 @@ public class MyTaskServiceImpl implements MyTaskService {
         //加签节点信息
         DynamicUserTaskBuilder taskBuilder = new DynamicUserTaskBuilder();
         taskBuilder.setName(taskName);
-        taskBuilder.setId("UserTaskAdd"+UUID.randomUUID().toString().replaceAll("-",""));
+        taskBuilder.setId("AddAfterSign"+UUID.randomUUID().toString().replaceAll("-",""));
         taskBuilder.setAssignee(assignee);
         TaskEntity taskEntity = (TaskEntity) taskService.createTaskQuery().taskId(taskId).singleResult();
         processEngine.getManagementService().executeCommand(new AfterSignUserTaskCmd(taskEntity.getProcessInstanceId(),taskBuilder,taskEntity.getId()));

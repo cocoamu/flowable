@@ -7,7 +7,6 @@ import com.cocoamu.flowable.service.MyCommentService;
 import com.cocoamu.flowable.vo.ReturnVo;
 import org.flowable.engine.ManagementService;
 import org.flowable.engine.TaskService;
-import org.flowable.task.api.Task;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,7 @@ public class MyCommentServiceImpl implements MyCommentService {
 
     @Override
     public ReturnVo addComment(Comment comment) {
-        Task task = taskService.createTaskQuery().taskId(comment.getTaskId()).singleResult();
-        if (task == null)
-            return ReturnVo.fail("任务不存在");
-        managementService.executeCommand(new AddHisCommentCmd(comment.getTaskId(), comment.getUserId(), task.getProcessInstanceId(),
+        managementService.executeCommand(new AddHisCommentCmd(comment.getTaskId(), comment.getUserId(), comment.getProcessInstanceId(),
                 comment.getType(), comment.getMessage()));
         return ReturnVo.sucess("添加评论成功");
     }
