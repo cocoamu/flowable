@@ -1,5 +1,8 @@
 package com.cocoamu.flowable.service;
 
+import com.cocoamu.flowable.dto.AddSignDto;
+import com.cocoamu.flowable.vo.ReturnVo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +37,8 @@ public interface MyTaskService {
     void mutileComplate(String taskId, Integer approved);
 
     /**
-     * 前加签
-     * @param taskId 当前任务id
-     * @param taskName 加签节点名称
-     * @param assignee 受理人
+     * 加签
+     * @param addSignVo
      */
-    void beforeAddSignTask(String taskId,String taskName,String assignee);
-
-    /**
-     * 后加签
-     * @param taskId 当前任务id
-     * @param taskName 加签节点名称
-     * @param assignee 受理人
-     */
-    void afterAddSignTask(String taskId,String taskName,String assignee);
+    ReturnVo addSignTask(AddSignDto addSignVo);
 }

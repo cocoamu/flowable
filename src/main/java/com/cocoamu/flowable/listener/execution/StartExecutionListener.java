@@ -16,6 +16,7 @@ public class StartExecutionListener implements ExecutionListener {
 
     public void notify(DelegateExecution execution) {
         UserTask userTask = (UserTask) execution.getCurrentFlowElement();
+        //获取任务自定义属性
         List<ExtensionAttribute> customProperty = FlowableUitls.getCustomProperty(userTask.getId(), execution.getProcessDefinitionId(), Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR);
         System.out.println(execution.getCurrentFlowElement().getName());
     }

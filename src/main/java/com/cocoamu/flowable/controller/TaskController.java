@@ -1,8 +1,10 @@
 package com.cocoamu.flowable.controller;
 
+import com.cocoamu.flowable.dto.AddSignDto;
 import com.cocoamu.flowable.service.MyTaskService;
 import com.cocoamu.flowable.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,31 +67,12 @@ public class TaskController {
     }
 
     /**
-     * 前加签
-     * @param taskId 当前加签的任务id
-     * @param taskName 新加签的任务名称
-     * @param assignee 新加签的任务受理人 这边可能是具体的一个人，也可能是一个表达式(调用接口去获取再设置到候选人)
+     * 加签
+     * @param addSignVo
      * @return
-     * @throws Exception
      */
-    @RequestMapping(value = "/beforeAddSignTask")
-    public ReturnVo beforeAddSignTask(String taskId, String taskName, String assignee) {
-        myTaskService.beforeAddSignTask(taskId,taskName,assignee);
-        return  ReturnVo.sucess("前加签成功");
-    }
-
-
-    /**
-     * 后加签
-     * @param taskId 当前加签的任务id
-     * @param taskName 新加签的任务名称
-     * @param assignee 新加签的受理人
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/afterAddSignTask")
-    public ReturnVo afterAddSignTask(String taskId,String taskName,String assignee) {
-        myTaskService.afterAddSignTask(taskId,taskName,assignee);
-        return ReturnVo.sucess("后加签成功");
+    @RequestMapping(value = "/addSignTask")
+    public ReturnVo addSignTask(@RequestBody AddSignDto addSignVo) {
+        return myTaskService.addSignTask(addSignVo);
     }
 }

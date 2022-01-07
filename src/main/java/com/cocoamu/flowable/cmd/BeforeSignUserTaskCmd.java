@@ -1,6 +1,7 @@
 package com.cocoamu.flowable.cmd;
 
 import com.cocoamu.flowable.constants.Constants;
+import com.cocoamu.flowable.dto.TaskDto;
 import com.cocoamu.flowable.util.ExtensionAttributeUtils;
 import com.cocoamu.flowable.util.FlowableUitls;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -30,27 +31,23 @@ import java.util.List;
  */
 public class BeforeSignUserTaskCmd extends AbstractDynamicInjectionCmd implements Command<Void> {
     //流程实例id
-    protected String processInstanceId;
+    private TaskDto currentTask;
 
     //后加签的节点信息
     private DynamicUserTaskBuilder signUserTaskBuilder;
-
-    //当前流程节点的id
-    private String taskId;
 
     private ExecutionEntity currentExecutionEntity;
 
     private FlowElement currentFlowElemet;
 
-    public BeforeSignUserTaskCmd(String processInstanceId, DynamicUserTaskBuilder signUserTaskBuilder, String taskId) {
-        this.processInstanceId = processInstanceId;
+    public BeforeSignUserTaskCmd(TaskDto taskDto, DynamicUserTaskBuilder signUserTaskBuilder) {
+        this.currentTask = taskDto;
         this.signUserTaskBuilder = signUserTaskBuilder;
-        this.taskId = taskId;
     }
 
     @Override
     public Void execute(CommandContext commandContext) {
-        createDerivedProcessDefinitionForProcessInstance(commandContext, processInstanceId);
+        createDerivedProcessDefinitionForProcessInstance(commandContext, currentTask.getProcessInstanceId());
         return null;
     }
 
@@ -59,9 +56,9 @@ public class BeforeSignUserTaskCmd extends AbstractDynamicInjectionCmd implement
                                      BpmnModel bpmnModel, ProcessDefinitionEntity originalProcessDefinitionEntity, DeploymentEntity newDeploymentEntity) {
         //判断当前任务是否存在
         TaskService taskService = CommandContextUtil.getTaskService(commandContext);
-        TaskEntity taskEntity = taskService.getTask(taskId);
+        TaskEntity taskEntity = taskService.getTask(currentTask.getTaskId());
         if(taskEntity==null){
-            throw new FlowableObjectNotFoundException("task:"+taskId+" not found");
+            throw new FlowableObjectNotFoundException("task:"+currentTask.getTaskId()+" not found");
         }
 
         //构建加签节点
@@ -86,7 +83,7 @@ public class BeforeSignUserTaskCmd extends AbstractDynamicInjectionCmd implement
         //查找当前节点对应的执行执行实体（表为ACT_RU_EXECUTION）
         currentExecutionEntity = CommandContextUtil.getExecutionEntityManager(commandContext).findById(taskEntity.getExecutionId());
         if(currentExecutionEntity==null){
-            throw new FlowableObjectNotFoundException("task:"+taskId+",execution:"+taskEntity.getExecutionId()+" not found");
+            throw new FlowableObjectNotFoundException("task:"+currentTask.getTaskId()+",execution:"+taskEntity.getExecutionId()+" not found");
         }
         //获取当前流程节点入口顺序流
         String activityId = currentExecutionEntity.getActivityId();
@@ -123,7 +120,7 @@ public class BeforeSignUserTaskCmd extends AbstractDynamicInjectionCmd implement
     protected void updateExecutions(CommandContext commandContext, ProcessDefinitionEntity processDefinitionEntity, ExecutionEntity executionEntity, List<ExecutionEntity> list) {
         BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processDefinitionEntity.getId());
        TaskService taskService = CommandContextUtil.getTaskService(commandContext);
-        List<TaskEntity> taskEntities= taskService.findTasksByProcessInstanceId(processInstanceId);
+        List<TaskEntity> taskEntities= taskService.findTasksByProcessInstanceId(currentTask.getProcessInstanceId());
         // 删除当前活动任务
         for (TaskEntity taskEntity:taskEntities) {
             taskEntity.getIdentityLinks().stream().forEach(identityLinkEntity -> {
