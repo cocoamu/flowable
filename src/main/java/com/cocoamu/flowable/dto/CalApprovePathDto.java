@@ -6,7 +6,6 @@ import java.util.Map;
 
 @Data
 public class CalApprovePathDto {
-    private String processInstanceId;
-    private String modelId;
+    private String processId;
     Map<String,Object> params;
 }

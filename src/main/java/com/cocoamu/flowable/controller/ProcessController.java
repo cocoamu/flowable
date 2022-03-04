@@ -90,7 +90,6 @@ public class ProcessController {
 
     @RequestMapping(value = "/calApprovePath")
     public List<FlowElement> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
-
-        return myProcessService.calApprovePath(calApprovePathDto.getProcessInstanceId(),calApprovePathDto.getModelId(),calApprovePathDto.getParams());
+        return myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams());
     }
 }

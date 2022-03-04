@@ -58,6 +58,6 @@ public interface MyProcessService {
      */
     String getBpmnJsonByXml(String bpmXml) throws UnsupportedEncodingException, XMLStreamException;
 
-    List<FlowElement> calApprovePath(String processInstanceId, String modelId, Map<String, Object> variableMap);
+    List<FlowElement> calApprovePath(String processId, Map<String, Object> variableMap);
 
 }

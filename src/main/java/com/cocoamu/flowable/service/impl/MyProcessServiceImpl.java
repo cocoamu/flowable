@@ -5,6 +5,7 @@ import com.cocoamu.flowable.service.MyProcessService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.*;
@@ -14,7 +15,9 @@ import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.image.ProcessDiagramGenerator;
+import org.flowable.ui.modeler.domain.AbstractModel;
 import org.flowable.ui.modeler.domain.Model;
+import org.flowable.ui.modeler.repository.ModelRepository;
 import org.flowable.ui.modeler.serviceapi.ModelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,8 @@ public class MyProcessServiceImpl implements MyProcessService {
     private RepositoryService repositoryService;
     @Autowired
     ProcessEngineConfigurationImpl processEngineConfiguration;
+    @Autowired
+    private ModelRepository modelRepository;
 
     Logger log = LoggerFactory.getLogger(MyProcessServiceImpl.class);
 
@@ -58,8 +63,8 @@ public class MyProcessServiceImpl implements MyProcessService {
         map.put("assigneeList", list);
         map.put("signCount", 0);
 
-        ProcessInstance processInstance =  runtimeService.startProcessInstanceByKey(processKey, map);
-        runtimeService.setVariable(processInstance.getProcessInstanceId(),"processInstance",processInstance.getProcessInstanceId());
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processKey, map);
+        runtimeService.setVariable(processInstance.getProcessInstanceId(), "processInstance", processInstance.getProcessInstanceId());
         return processInstance;
     }
 
@@ -82,7 +87,7 @@ public class MyProcessServiceImpl implements MyProcessService {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
         ProcessEngineConfiguration engconf = processEngine.getProcessEngineConfiguration();
         ProcessDiagramGenerator diagramGenerator = engconf.getProcessDiagramGenerator();
-        InputStream in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0,false);
+        InputStream in = diagramGenerator.generateDiagram(bpmnModel, "png", activityIds, flows, engconf.getActivityFontName(), engconf.getLabelFontName(), engconf.getAnnotationFontName(), engconf.getClassLoader(), 1.0, false);
         OutputStream out = null;
         byte[] buf = new byte[1024];
         int legth = 0;
@@ -140,25 +145,25 @@ public class MyProcessServiceImpl implements MyProcessService {
     }
 
     @Override
-    public List<FlowElement> calApprovePath(String processInstanceId, String modelId, Map<String, Object> variableMap) {
-        BpmnModel bpmnModel;
-        if(StringUtils.isNotBlank(processInstanceId)){
-            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
-        }else {
-            Model model = modelService.getModel(modelId);
-            bpmnModel = modelService.getBpmnModel(model);
-        }
-        Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+    public List<FlowElement> calApprovePath(String processId, Map<String, Object> variableMap) {
         List<FlowElement> passElements = new ArrayList<>();
-        this.dueStartElement(passElements, flowElements, variableMap);
+        BpmnModel bpmnModel;
+        if (StringUtils.isNotBlank(processId)) {
+            List<Model> models = modelRepository.findByKeyAndType(processId, AbstractModel.MODEL_TYPE_BPMN);
+            if (CollectionUtils.isNotEmpty(models)) {
+                Model model = models.get(0);
+                bpmnModel = modelService.getBpmnModel(model);
+                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+                this.dueStartElement(passElements, flowElements, variableMap);
+            }
+        }
         return passElements;
     }
 
     /**
      * 2. 找到开始节点，通过它的目标节点，然后再不断往下找。
      */
-    private void dueStartElement(List<FlowElement> passElements, Collection<FlowElement> flowElements, Map<String, Object> variableMap){
+    private void dueStartElement(List<FlowElement> passElements, Collection<FlowElement> flowElements, Map<String, Object> variableMap) {
         Optional<FlowElement> startElementOpt = flowElements.stream().filter(flowElement -> flowElement instanceof StartEvent).findFirst();
         startElementOpt.ifPresent(startElement -> {
             flowElements.remove(startElement);
@@ -179,7 +184,7 @@ public class MyProcessServiceImpl implements MyProcessService {
     /**
      * 3. 我只用到了UserTask、ExclusiveGateway、ParallelGateway，所以代码里只列举了这三种，如果用到了其他的，可以再自己补充
      */
-    private void getPassElementList(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap){
+    private void getPassElementList(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {
         // 任务节点
         if (curFlowElement instanceof UserTask) {
             this.dueUserTaskElement(passElements, flowElements, curFlowElement, variableMap);
@@ -191,12 +196,12 @@ public class MyProcessServiceImpl implements MyProcessService {
             return;
         }
         // 并行网关
-        if(curFlowElement instanceof ParallelGateway){
+        if (curFlowElement instanceof ParallelGateway) {
             this.dueParallelGateway(passElements, flowElements, curFlowElement, variableMap);
         }
     }
 
-    private void dueUserTaskElement(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap){
+    private void dueUserTaskElement(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {
         passElements.add(curFlowElement);
         List<SequenceFlow> outgoingFlows = ((UserTask) curFlowElement).getOutgoingFlows();
         String targetRef = outgoingFlows.get(0).getTargetRef();
@@ -210,7 +215,7 @@ public class MyProcessServiceImpl implements MyProcessService {
         this.getPassElementList(passElements, flowElements, targetElement, variableMap);
     }
 
-    private void dueExclusiveGateway(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap){
+    private void dueExclusiveGateway(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {
         // 获取符合条件的sequenceFlow的目标FlowElement
         List<SequenceFlow> exclusiveGatewayOutgoingFlows = ((ExclusiveGateway) curFlowElement).getOutgoingFlows();
         flowElements.remove(curFlowElement);
@@ -221,10 +226,10 @@ public class MyProcessServiceImpl implements MyProcessService {
         this.getPassElementList(passElements, flowElements, targetElement, variableMap);
     }
 
-    private void dueParallelGateway(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap){
+    private void dueParallelGateway(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {
         FlowElement targetElement;
         List<SequenceFlow> parallelGatewayOutgoingFlows = ((ParallelGateway) curFlowElement).getOutgoingFlows();
-        for(SequenceFlow sequenceFlow : parallelGatewayOutgoingFlows){
+        for (SequenceFlow sequenceFlow : parallelGatewayOutgoingFlows) {
             targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
             this.getPassElementList(passElements, flowElements, targetElement, variableMap);
         }
@@ -232,6 +237,7 @@ public class MyProcessServiceImpl implements MyProcessService {
 
     /**
      * 4. 根据传入的变量，计算出表达式成立的那一条SequenceFlow
+     *
      * @param variableMap
      * @param outgoingFlows
      * @return
@@ -248,7 +254,7 @@ public class MyProcessServiceImpl implements MyProcessService {
         return sequenceFlowOpt.orElse(outgoingFlows.get(0));
     }
 
-    private boolean getElValue(String exp, Map<String, Object> variableMap){
+    private boolean getElValue(String exp, Map<String, Object> variableMap) {
         return managementService.executeCommand(new ExpressionCmd(runtimeService, processEngineConfiguration, null, exp, variableMap));
     }
 
