@@ -110,6 +110,7 @@ public class MyModelServiceImpl implements MyModelService {
             resultMap.put("deploy_id", deploy.getId());
             ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deploy.getId()).singleResult();
             resultMap.put("process_id", processDefinition.getKey());
+            resultMap.put("module_id", modelId);
             return ReturnVo.sucess(resultMap);
         } catch (Exception e) {
             String msg = MessageFormat.format("deploy is error  modelId:{0} messsage:{1}", modelId, e.getMessage());

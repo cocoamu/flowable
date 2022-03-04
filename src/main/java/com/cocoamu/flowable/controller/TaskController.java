@@ -68,7 +68,7 @@ public class TaskController {
 
     /**
      * 加签
-     * @param addSignVo
+     * @param addSignVo 0前加签 1后加签
      * @return
      */
     @RequestMapping(value = "/addSignTask")

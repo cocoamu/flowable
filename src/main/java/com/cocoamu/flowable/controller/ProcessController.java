@@ -1,6 +1,8 @@
 package com.cocoamu.flowable.controller;
 
+import com.cocoamu.flowable.dto.CalApprovePathDto;
 import com.cocoamu.flowable.service.MyProcessService;
+import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -83,5 +86,11 @@ public class ProcessController {
     @RequestMapping(value = "/getBpmnJsonByXml")
     public String getBpmnJsonByXml(@RequestBody String bpmJson) throws Exception {
         return myProcessService.getBpmnJsonByXml(bpmJson);
+    }
+
+    @RequestMapping(value = "/calApprovePath")
+    public List<FlowElement> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
+
+        return myProcessService.calApprovePath(calApprovePathDto.getProcessInstanceId(),calApprovePathDto.getModelId(),calApprovePathDto.getParams());
     }
 }
