@@ -33,8 +33,10 @@ public class ExpressionCmd implements Command<Boolean> {
     @Override
     public Boolean execute(CommandContext commandContext) {
         if(this.exp.contains("execution")){
+            //自定义函数处理，这边可以根据具体的业务逻辑判断，比如调用其他服务接口判断
             return true;
         }
+        //下面都是使用原生的el表达式，先设置环境变量，再调用内置的方法计算表达式的结果
         Expression expression = processEngineConfiguration.getExpressionManager().createExpression(this.exp);
         ExecutionEntity executionEntity;
         if(StringUtils.isNotBlank(this.processInstanceId)){
