@@ -32,13 +32,28 @@ public class ProcessController {
      * @return
      */
     @RequestMapping(value = "/start")
-    public Map<String,Object> startProcessInstance(@RequestBody StartProcessDto startProcessDto) {
+    public Map<String,Object> startProcess(String processKey) {
         Map<String,Object> result = new HashMap<>();
-        ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey());
+        ProcessInstance processInstance = myProcessService.startProcess(processKey);
         result.put("processInstanceId：",processInstance.getProcessInstanceId());
         result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
+        return result;
+    }
 
+    /**
+     * 开始流程并根据条件动态修改指定环节的扩展属性
+     * @param startProcessDto
+     * @return
+     */
+    @RequestMapping(value = "/startWithExpress")
+    public Map<String,Object> startProcessWithExpress(@RequestBody StartProcessDto startProcessDto) {
+        Map<String,Object> result = new HashMap<>();
+        //启动流程
+        ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey());
+        //动态修改指定节点扩展属性
         myTaskService.updateSignTask(processInstance.getProcessInstanceId(),startProcessDto.getExpressList());
+        result.put("processInstanceId：",processInstance.getProcessInstanceId());
+        result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
         return result;
     }
 
@@ -94,6 +109,11 @@ public class ProcessController {
         return myProcessService.getBpmnJsonByXml(bpmJson);
     }
 
+    /**
+     * 根据条件获取(预测)可能到达的节点
+     * @param calApprovePathDto
+     * @return
+     */
     @RequestMapping(value = "/calApprovePath")
     public List<FlowElementVo> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
         return myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams(),calApprovePathDto.getApproveIds());

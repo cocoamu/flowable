@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FlowElementVo {
-    public String elementId;
-    public String elementName;
+    private String elementId;
+    private String elementName;
 }

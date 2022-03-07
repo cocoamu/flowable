@@ -7,7 +7,6 @@ import lombok.Data;
  */
 @Data
 public class UpdateTaskDto {
-    private String processId;
     private String elementId;
     private String elementAttr;
 }

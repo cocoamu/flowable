@@ -8,6 +8,6 @@ import java.util.Map;
 @Data
 public class CalApprovePathDto {
     private String processId;
-    Map<String,Object> params;
-    List<String> approveIds;
+    private Map<String,Object> params;
+    private List<String> approveIds;
 }

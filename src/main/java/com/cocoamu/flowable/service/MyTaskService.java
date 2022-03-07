@@ -45,7 +45,9 @@ public interface MyTaskService {
 
     /**
      * 动态修改节点属性
-     * @param addSignVo
+     * @param processId 流程实例id
+     * @param list 指定节点id和表达式
+     * @return
      */
-    ReturnVo updateSignTask(String processId, List<UpdateTaskDto> list);
+    void updateSignTask(String processId, List<UpdateTaskDto> list);
 }

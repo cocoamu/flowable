@@ -2,9 +2,7 @@ package com.cocoamu.flowable.cmd;
 
 import com.cocoamu.flowable.constants.Constants;
 import com.cocoamu.flowable.dto.UpdateTaskDto;
-import com.cocoamu.flowable.service.MyCommentService;
 import com.cocoamu.flowable.util.ExtensionAttributeUtils;
-import com.cocoamu.flowable.util.FlowableUitls;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
 import org.flowable.common.engine.api.FlowableException;
@@ -19,26 +17,23 @@ import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import java.util.*;
 
 /**
- * 后加签核心类
+ * 动态修改环节属性核心类
  */
 
 public class UpdateUserTaskCmd extends AbstractDynamicInjectionCmd implements Command<Void> {
 
     //当前操作加签节点信息
     private UpdateTaskDto currentTask;
+    private String processId;
 
-
-    private ExecutionEntity currentExecutionEntity;
-    private FlowElement currentFlowElemet;
-    private MyCommentService myCommentService = FlowableUitls.getApplicationContext().getBean(MyCommentService.class);
-
-    public UpdateUserTaskCmd(UpdateTaskDto updateTaskDto) {
+    public UpdateUserTaskCmd(String processId,UpdateTaskDto updateTaskDto) {
+        this.processId = processId;
         this.currentTask = updateTaskDto;
     }
 
     @Override
     public Void execute(CommandContext commandContext) {
-        createDerivedProcessDefinitionForProcessInstance(commandContext, currentTask.getProcessId());
+        createDerivedProcessDefinitionForProcessInstance(commandContext, processId);
         return null;
     }
 

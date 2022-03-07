@@ -58,6 +58,13 @@ public interface MyProcessService {
      */
     String getBpmnJsonByXml(String bpmXml) throws UnsupportedEncodingException, XMLStreamException;
 
+    /**
+     * 根据表达式获取(预测)流程可能经过的节点
+     * @param processId 流程定义id
+     * @param variableMap 表达式(key:value)
+     * @param approveIds 过滤范围 (可能经过的有5个人，但只要返回在这个范围内的即可,为空则返回所有预测的节点)
+     * @return
+     */
     List<FlowElementVo> calApprovePath(String processId, Map<String, Object> variableMap, List<String> approveIds);
 
 }

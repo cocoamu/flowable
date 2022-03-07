@@ -160,15 +160,17 @@ public class MyProcessServiceImpl implements MyProcessService {
             }
         }
         return passElements.stream().filter(flowElement -> {
-            if (approveIds.contains(flowElement.getId())){
-                return true;
+            if (approveIds.size()>0){
+                if (!approveIds.contains(flowElement.getId())){
+                    return false;
+                }
             }
-            return false;
+            return true;
         }).map(flowElement -> new FlowElementVo(flowElement.getId(),flowElement.getName())).collect(Collectors.toList());
     }
 
     /**
-     * 2. 找到开始节点，通过它的目标节点，然后再不断往下找。
+     * 找到开始节点，通过它的目标节点，然后再不断往下找。
      */
     private void dueStartElement(List<FlowElement> passElements, Collection<FlowElement> flowElements, Map<String, Object> variableMap) {
         Optional<FlowElement> startElementOpt = flowElements.stream().filter(flowElement -> flowElement instanceof StartEvent).findFirst();
@@ -189,7 +191,7 @@ public class MyProcessServiceImpl implements MyProcessService {
     }
 
     /**
-     * 3. 我只用到了UserTask、ExclusiveGateway、ParallelGateway，所以代码里只列举了这三种，如果用到了其他的，可以再自己补充
+     * 这边先实现UserTask、ExclusiveGateway、ParallelGateway，这三种，如果用到了其他的，可以再补充
      */
     private void getPassElementList(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {
         // 任务节点
@@ -243,7 +245,7 @@ public class MyProcessServiceImpl implements MyProcessService {
     }
 
     /**
-     * 4. 根据传入的变量，计算出表达式成立的那一条SequenceFlow
+     * 根据传入的变量，计算出表达式成立的那一条SequenceFlow
      *
      * @param variableMap
      * @param outgoingFlows

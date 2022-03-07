@@ -115,12 +115,9 @@ public class MyTaskServiceImpl implements MyTaskService {
     }
 
     @Override
-    public ReturnVo updateSignTask(String processId, List<UpdateTaskDto> list) {
+    public void updateSignTask(String processId, List<UpdateTaskDto> list) {
         list.stream().forEach(updateTaskDto -> {
-            updateTaskDto.setProcessId(processId);
-            processEngine.getManagementService().executeCommand(new UpdateUserTaskCmd(updateTaskDto));
+            processEngine.getManagementService().executeCommand(new UpdateUserTaskCmd(processId,updateTaskDto));
         });
-
-        return null;
     }
 }
