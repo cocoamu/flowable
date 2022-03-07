@@ -1,8 +1,10 @@
 package com.cocoamu.flowable.controller;
 
 import com.cocoamu.flowable.dto.CalApprovePathDto;
+import com.cocoamu.flowable.dto.StartProcessDto;
 import com.cocoamu.flowable.service.MyProcessService;
-import org.flowable.bpmn.model.FlowElement;
+import com.cocoamu.flowable.service.MyTaskService;
+import com.cocoamu.flowable.vo.FlowElementVo;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,8 @@ public class ProcessController {
 
     @Autowired
     private MyProcessService myProcessService;
+    @Autowired
+    private MyTaskService myTaskService;
 
     /**
      * 开始流程
@@ -28,11 +32,13 @@ public class ProcessController {
      * @return
      */
     @RequestMapping(value = "/start")
-    public Map<String,Object> startProcessInstance(String processKey) {
+    public Map<String,Object> startProcessInstance(@RequestBody StartProcessDto startProcessDto) {
         Map<String,Object> result = new HashMap<>();
-        ProcessInstance processInstance = myProcessService.startProcess(processKey);
+        ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey());
         result.put("processInstanceId：",processInstance.getProcessInstanceId());
         result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
+
+        myTaskService.updateSignTask(processInstance.getProcessInstanceId(),startProcessDto.getExpressList());
         return result;
     }
 
@@ -89,7 +95,7 @@ public class ProcessController {
     }
 
     @RequestMapping(value = "/calApprovePath")
-    public List<FlowElement> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
-        return myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams());
+    public List<FlowElementVo> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
+        return myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams(),calApprovePathDto.getApproveIds());
     }
 }

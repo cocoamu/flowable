@@ -2,8 +2,10 @@ package com.cocoamu.flowable.service.impl;
 
 import com.cocoamu.flowable.cmd.AfterSignUserTaskCmd;
 import com.cocoamu.flowable.cmd.BeforeSignUserTaskCmd;
+import com.cocoamu.flowable.cmd.UpdateUserTaskCmd;
 import com.cocoamu.flowable.dto.AddSignDto;
 import com.cocoamu.flowable.dto.TaskDto;
+import com.cocoamu.flowable.dto.UpdateTaskDto;
 import com.cocoamu.flowable.service.MyTaskService;
 import com.cocoamu.flowable.vo.ReturnVo;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +66,7 @@ public class MyTaskServiceImpl implements MyTaskService {
         Map<String, Object> map = new HashMap();
         map.put("approved", approved);
         map.put("comment", comment);
+        map.put("a", 1);
         taskService.complete(taskId, map);
     }
 
@@ -109,5 +112,15 @@ public class MyTaskServiceImpl implements MyTaskService {
         } else {
             return ReturnVo.fail("任务不存在");
         }
+    }
+
+    @Override
+    public ReturnVo updateSignTask(String processId, List<UpdateTaskDto> list) {
+        list.stream().forEach(updateTaskDto -> {
+            updateTaskDto.setProcessId(processId);
+            processEngine.getManagementService().executeCommand(new UpdateUserTaskCmd(updateTaskDto));
+        });
+
+        return null;
     }
 }

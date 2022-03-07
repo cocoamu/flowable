@@ -1,7 +1,7 @@
 package com.cocoamu.flowable.service;
 
+import com.cocoamu.flowable.vo.FlowElementVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.runtime.ProcessInstance;
 
 import javax.servlet.http.HttpServletResponse;
@@ -58,6 +58,6 @@ public interface MyProcessService {
      */
     String getBpmnJsonByXml(String bpmXml) throws UnsupportedEncodingException, XMLStreamException;
 
-    List<FlowElement> calApprovePath(String processId, Map<String, Object> variableMap);
+    List<FlowElementVo> calApprovePath(String processId, Map<String, Object> variableMap, List<String> approveIds);
 
 }

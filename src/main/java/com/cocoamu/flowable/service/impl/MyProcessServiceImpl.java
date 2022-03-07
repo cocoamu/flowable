@@ -2,6 +2,7 @@ package com.cocoamu.flowable.service.impl;
 
 import com.cocoamu.flowable.cmd.ExpressionCmd;
 import com.cocoamu.flowable.service.MyProcessService;
+import com.cocoamu.flowable.vo.FlowElementVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -30,6 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MyProcessServiceImpl implements MyProcessService {
@@ -145,7 +147,7 @@ public class MyProcessServiceImpl implements MyProcessService {
     }
 
     @Override
-    public List<FlowElement> calApprovePath(String processId, Map<String, Object> variableMap) {
+    public List<FlowElementVo> calApprovePath(String processId, Map<String, Object> variableMap, List<String> approveIds) {
         List<FlowElement> passElements = new ArrayList<>();
         BpmnModel bpmnModel;
         if (StringUtils.isNotBlank(processId)) {
@@ -157,7 +159,12 @@ public class MyProcessServiceImpl implements MyProcessService {
                 this.dueStartElement(passElements, flowElements, variableMap);
             }
         }
-        return passElements;
+        return passElements.stream().filter(flowElement -> {
+            if (approveIds.contains(flowElement.getId())){
+                return true;
+            }
+            return false;
+        }).map(flowElement -> new FlowElementVo(flowElement.getId(),flowElement.getName())).collect(Collectors.toList());
     }
 
     /**

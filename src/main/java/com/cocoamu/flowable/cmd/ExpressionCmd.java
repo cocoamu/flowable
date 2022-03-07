@@ -33,6 +33,9 @@ public class ExpressionCmd implements Command<Boolean>, Serializable {
 
     @Override
     public Boolean execute(CommandContext commandContext) {
+        if(this.exp.contains("execution")){
+            return true;
+        }
         Expression expression = processEngineConfiguration.getExpressionManager().createExpression(this.exp);
         ExecutionEntity executionEntity;
         if(StringUtils.isNotBlank(this.processInstanceId)){
