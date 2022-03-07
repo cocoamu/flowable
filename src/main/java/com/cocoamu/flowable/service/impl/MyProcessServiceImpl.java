@@ -160,10 +160,8 @@ public class MyProcessServiceImpl implements MyProcessService {
             }
         }
         return passElements.stream().filter(flowElement -> {
-            if (approveIds.size()>0){
-                if (!approveIds.contains(flowElement.getId())){
-                    return false;
-                }
+            if (!org.springframework.util.CollectionUtils.isEmpty(approveIds)) {
+                return approveIds.contains(flowElement.getId());
             }
             return true;
         }).map(flowElement -> new FlowElementVo(flowElement.getId(),flowElement.getName())).collect(Collectors.toList());

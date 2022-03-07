@@ -9,10 +9,9 @@ import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class ExpressionCmd implements Command<Boolean>, Serializable {
+public class ExpressionCmd implements Command<Boolean> {
     protected RuntimeService runtimeService;
 
     protected ProcessEngineConfigurationImpl processEngineConfiguration;

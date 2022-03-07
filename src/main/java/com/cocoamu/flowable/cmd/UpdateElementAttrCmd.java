@@ -1,7 +1,7 @@
 package com.cocoamu.flowable.cmd;
 
 import com.cocoamu.flowable.constants.Constants;
-import com.cocoamu.flowable.dto.UpdateTaskDto;
+import com.cocoamu.flowable.dto.UpdateElementDto;
 import com.cocoamu.flowable.util.ExtensionAttributeUtils;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
@@ -20,13 +20,13 @@ import java.util.*;
  * 动态修改环节属性核心类
  */
 
-public class UpdateUserTaskCmd extends AbstractDynamicInjectionCmd implements Command<Void> {
+public class UpdateElementAttrCmd extends AbstractDynamicInjectionCmd implements Command<Void> {
 
     //当前操作加签节点信息
-    private UpdateTaskDto currentTask;
-    private String processId;
+    private final UpdateElementDto currentTask;
+    private final String processId;
 
-    public UpdateUserTaskCmd(String processId,UpdateTaskDto updateTaskDto) {
+    public UpdateElementAttrCmd(String processId, UpdateElementDto updateTaskDto) {
         this.processId = processId;
         this.currentTask = updateTaskDto;
     }

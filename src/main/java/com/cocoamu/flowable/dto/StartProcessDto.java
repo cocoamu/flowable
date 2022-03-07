@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class StartProcessDto {
     private String processKey;
-    List<UpdateTaskDto> expressList;
+    List<UpdateElementDto> expressList;
 
 }

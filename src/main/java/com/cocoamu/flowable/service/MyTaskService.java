@@ -1,7 +1,7 @@
 package com.cocoamu.flowable.service;
 
 import com.cocoamu.flowable.dto.AddSignDto;
-import com.cocoamu.flowable.dto.UpdateTaskDto;
+import com.cocoamu.flowable.dto.UpdateElementDto;
 import com.cocoamu.flowable.vo.ReturnVo;
 
 import java.util.List;
@@ -49,5 +49,5 @@ public interface MyTaskService {
      * @param list 指定节点id和表达式
      * @return
      */
-    void updateSignTask(String processId, List<UpdateTaskDto> list);
+    void updateSignTask(String processId, List<UpdateElementDto> list);
 }

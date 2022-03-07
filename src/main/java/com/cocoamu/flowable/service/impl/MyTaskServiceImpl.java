@@ -2,10 +2,10 @@ package com.cocoamu.flowable.service.impl;
 
 import com.cocoamu.flowable.cmd.AfterSignUserTaskCmd;
 import com.cocoamu.flowable.cmd.BeforeSignUserTaskCmd;
-import com.cocoamu.flowable.cmd.UpdateUserTaskCmd;
+import com.cocoamu.flowable.cmd.UpdateElementAttrCmd;
 import com.cocoamu.flowable.dto.AddSignDto;
 import com.cocoamu.flowable.dto.TaskDto;
-import com.cocoamu.flowable.dto.UpdateTaskDto;
+import com.cocoamu.flowable.dto.UpdateElementDto;
 import com.cocoamu.flowable.service.MyTaskService;
 import com.cocoamu.flowable.vo.ReturnVo;
 import org.apache.commons.lang3.StringUtils;
@@ -115,9 +115,9 @@ public class MyTaskServiceImpl implements MyTaskService {
     }
 
     @Override
-    public void updateSignTask(String processId, List<UpdateTaskDto> list) {
+    public void updateSignTask(String processId, List<UpdateElementDto> list) {
         list.stream().forEach(updateTaskDto -> {
-            processEngine.getManagementService().executeCommand(new UpdateUserTaskCmd(processId,updateTaskDto));
+            processEngine.getManagementService().executeCommand(new UpdateElementAttrCmd(processId,updateTaskDto));
         });
     }
 }

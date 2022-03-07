@@ -6,7 +6,7 @@ import lombok.Data;
  * 任务dto
  */
 @Data
-public class UpdateTaskDto {
+public class UpdateElementDto {
     private String elementId;
     private String elementAttr;
 }
