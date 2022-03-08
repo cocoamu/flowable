@@ -4,7 +4,7 @@ import com.cocoamu.flowable.dto.CalApprovePathDto;
 import com.cocoamu.flowable.dto.StartProcessDto;
 import com.cocoamu.flowable.service.MyProcessService;
 import com.cocoamu.flowable.service.MyTaskService;
-import com.cocoamu.flowable.vo.FlowElementVo;
+import com.cocoamu.flowable.vo.ReturnVo;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -115,7 +114,9 @@ public class ProcessController {
      * @return
      */
     @RequestMapping(value = "/calApprovePath")
-    public List<FlowElementVo> calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
-        return myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams(),calApprovePathDto.getApproveIds());
+    public ReturnVo calApprovePath(@RequestBody CalApprovePathDto calApprovePathDto){
+        Map<String,Object> data = new HashMap<>();
+        data.put("elements",myProcessService.calApprovePath(calApprovePathDto.getProcessId(),calApprovePathDto.getParams(),calApprovePathDto.getElementIds()));
+        return ReturnVo.sucess(data);
     }
 }

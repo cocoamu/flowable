@@ -1,6 +1,5 @@
 package com.cocoamu.flowable.vo;
 
-import com.cocoamu.flowable.enums.ReturnCodeEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,20 +7,24 @@ import java.io.Serializable;
 @Data
 public class ReturnVo<T> implements Serializable {
 
-    private ReturnCodeEnum returnCode;
+    private Integer code;
+
+    private String msg;
 
     private T data;
 
     public static <T> ReturnVo sucess(T data) {
         ReturnVo<T> response = new ReturnVo<>();
-        response.returnCode = ReturnCodeEnum.SUCCESS;
+        response.code = 0;
+        response.msg = "ok";
         response.data = data;
         return response;
     }
 
     public static <T> ReturnVo fail(T data) {
         ReturnVo<T> response = new ReturnVo<>();
-        response.returnCode = ReturnCodeEnum.FAIL;
+        response.code = -1;
+        response.msg = "fail";
         response.data = data;
         return response;
     }
