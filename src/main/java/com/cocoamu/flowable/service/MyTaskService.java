@@ -50,4 +50,6 @@ public interface MyTaskService {
      * @return
      */
     void updateSignTask(String processId, List<UpdateElementDto> list);
+
+    ReturnVo goBack(String taskId,Integer backType);
 }

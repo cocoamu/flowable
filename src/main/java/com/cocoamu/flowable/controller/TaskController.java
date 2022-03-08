@@ -75,4 +75,16 @@ public class TaskController {
     public ReturnVo addSignTask(@RequestBody AddSignDto addSignVo) {
         return myTaskService.addSignTask(addSignVo);
     }
+
+
+    /**
+     * 流程退回
+     * @param taskId
+     * @param backType
+     * @return
+     */
+    @RequestMapping("/goBack")
+    public ReturnVo goBack(String taskId, Integer backType) {
+        return myTaskService.goBack(taskId, backType);
+    }
 }
