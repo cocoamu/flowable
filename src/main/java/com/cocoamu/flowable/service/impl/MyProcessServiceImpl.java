@@ -1,6 +1,7 @@
 package com.cocoamu.flowable.service.impl;
 
 import com.cocoamu.flowable.cmd.ExpressionCmd;
+import com.cocoamu.flowable.constants.Constants;
 import com.cocoamu.flowable.service.MyProcessService;
 import com.cocoamu.flowable.vo.FlowElementVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -153,18 +155,18 @@ public class MyProcessServiceImpl implements MyProcessService {
         if (StringUtils.isNotBlank(processId)) {
             List<Model> models = modelRepository.findByKeyAndType(processId, AbstractModel.MODEL_TYPE_BPMN);
             if (CollectionUtils.isNotEmpty(models)) {
-                Model model = models.get(0);
-                bpmnModel = modelService.getBpmnModel(model);
+                bpmnModel = modelService.getBpmnModel(models.get(0));
                 Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
                 this.dueStartElement(passElements, flowElements, variableMap);
             }
+            return passElements.stream().filter(flowElement -> {
+                if (!org.springframework.util.CollectionUtils.isEmpty(approveIds)) {
+                    return approveIds.contains(flowElement.getId());
+                }
+                return true;
+            }).map(flowElement -> new FlowElementVo(flowElement.getId(),flowElement.getName())).collect(Collectors.toList());
         }
-        return passElements.stream().filter(flowElement -> {
-            if (!org.springframework.util.CollectionUtils.isEmpty(approveIds)) {
-                return approveIds.contains(flowElement.getId());
-            }
-            return true;
-        }).map(flowElement -> new FlowElementVo(flowElement.getId(),flowElement.getName())).collect(Collectors.toList());
+        return null;
     }
 
     /**
@@ -226,11 +228,24 @@ public class MyProcessServiceImpl implements MyProcessService {
         // 获取符合条件的sequenceFlow的目标FlowElement
         List<SequenceFlow> exclusiveGatewayOutgoingFlows = ((ExclusiveGateway) curFlowElement).getOutgoingFlows();
         flowElements.remove(curFlowElement);
-        // 找到表达式成立的sequenceFlow
-        SequenceFlow sequenceFlow = getSequenceFlow(variableMap, exclusiveGatewayOutgoingFlows);
-        // 根据ID找到FlowElement
-        FlowElement targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
-        this.getPassElementList(passElements, flowElements, targetElement, variableMap);
+        AtomicBoolean hasCusExpress = new AtomicBoolean(false);
+        //这边需要判断下这个条件表达式是不是自定义的，如果是则目标节点需要无条件返回，否则还是走表达式
+        exclusiveGatewayOutgoingFlows.stream().forEach(sequenceFlow -> {
+            if (sequenceFlow.getConditionExpression().contains(Constants.CUSTOM_FUNC)){
+                hasCusExpress.set(true);
+                // 根据ID找到FlowElement
+                FlowElement targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
+                this.getPassElementList(passElements, flowElements, targetElement, variableMap);
+            }
+        });
+       //没有自定义表达式节点还是走正常的表达式判断
+        if (!hasCusExpress.get()){
+            // 找到表达式成立的sequenceFlow
+            SequenceFlow sequenceFlow = getSequenceFlow(variableMap, exclusiveGatewayOutgoingFlows);
+            // 根据ID找到FlowElement
+            FlowElement targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
+            this.getPassElementList(passElements, flowElements, targetElement, variableMap);
+        }
     }
 
     private void dueParallelGateway(List<FlowElement> passElements, Collection<FlowElement> flowElements, FlowElement curFlowElement, Map<String, Object> variableMap) {

@@ -10,4 +10,9 @@ public final class Constants {
      * 函数分隔符
      */
     public static final String  SEPARATOR = ",";
+
+    /**
+     * 自定义函数名
+     */
+    public static final String CUSTOM_FUNC = "execution";
 }

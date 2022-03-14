@@ -1,5 +1,6 @@
 package com.cocoamu.flowable.cmd;
 
+import com.cocoamu.flowable.constants.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.common.engine.impl.interceptor.Command;
@@ -32,8 +33,10 @@ public class ExpressionCmd implements Command<Boolean> {
 
     @Override
     public Boolean execute(CommandContext commandContext) {
-        if(this.exp.contains("execution")){
+        if(this.exp.contains(Constants.CUSTOM_FUNC)){
             //自定义函数处理，这边可以根据具体的业务逻辑判断，比如调用其他服务接口判断
+            //这边后面需求又改了一下，自定义函数的节点要无条件返回，但是测试了下，这边返回true，那第二条路不会进来，两条都返回false，那还是会默认返回第一条，
+            //所以这边直接返回true，在其他地方做处理,不处理的话会少一些节点
             return true;
         }
         //下面都是使用原生的el表达式，先设置环境变量，再调用内置的方法计算表达式的结果
