@@ -33,7 +33,7 @@ public class ProcessController {
     @RequestMapping(value = "/start")
     public Map<String,Object> startProcess(String processKey) {
         Map<String,Object> result = new HashMap<>();
-        ProcessInstance processInstance = myProcessService.startProcess(processKey);
+        ProcessInstance processInstance = myProcessService.startProcess(processKey,null);
         result.put("processInstanceId：",processInstance.getProcessInstanceId());
         result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
         return result;
@@ -48,7 +48,7 @@ public class ProcessController {
     public Map<String,Object> startProcessWithExpress(@RequestBody StartProcessDto startProcessDto) {
         Map<String,Object> result = new HashMap<>();
         //启动流程
-        ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey());
+        ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey(),startProcessDto.getExpressList());
         //动态修改指定节点扩展属性
         myTaskService.updateSignTask(processInstance.getProcessInstanceId(),startProcessDto.getExpressList());
         result.put("processInstanceId：",processInstance.getProcessInstanceId());

@@ -33,6 +33,10 @@ public class ExpressionCmd implements Command<Boolean> {
 
     @Override
     public Boolean execute(CommandContext commandContext) {
+        //判断是空表达式会直接返回，这边不用关心默认表达式会先执行的问题，在外面已经排序过了
+        if (StringUtils.isEmpty(this.exp)) {
+            return true;
+        }
         if(this.exp.contains(Constants.CUSTOM_FUNC)){
             //自定义函数处理，这边可以根据具体的业务逻辑判断，比如调用其他服务接口判断
             //这边后面需求又改了一下，自定义函数的节点要无条件返回，但是测试了下，这边返回true，那第二条路不会进来，两条都返回false，那还是会默认返回第一条，

@@ -2,6 +2,7 @@ package com.cocoamu.flowable.service.impl;
 
 import com.cocoamu.flowable.cmd.ExpressionCmd;
 import com.cocoamu.flowable.constants.Constants;
+import com.cocoamu.flowable.dto.UpdateElementDto;
 import com.cocoamu.flowable.service.MyProcessService;
 import com.cocoamu.flowable.vo.FlowElementVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,7 +56,7 @@ public class MyProcessServiceImpl implements MyProcessService {
     Logger log = LoggerFactory.getLogger(MyProcessServiceImpl.class);
 
     @Override
-    public ProcessInstance startProcess(String processKey) {
+    public ProcessInstance startProcess(String processKey,List<UpdateElementDto> expressList) {
         //可以往这个map里面放一些参数后面流程中可以获取
         Map<String, Object> map = new HashMap();
 
@@ -66,6 +67,10 @@ public class MyProcessServiceImpl implements MyProcessService {
         list.add("红红4");
         map.put("assigneeList", list);
         map.put("signCount", 0);
+        //为了解决第一个节点获取不到表达式的问题
+        if (CollectionUtils.isNotEmpty(expressList)){
+            map.put(expressList.get(0).getElementId()+"_"+Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR,expressList.get(0).getElementAttr());
+        }
 
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processKey, map);
         runtimeService.setVariable(processInstance.getProcessInstanceId(), "processInstance", processInstance.getProcessInstanceId());
@@ -231,11 +236,13 @@ public class MyProcessServiceImpl implements MyProcessService {
         AtomicBoolean hasCusExpress = new AtomicBoolean(false);
         //这边需要判断下这个条件表达式是不是自定义的，如果是则目标节点需要无条件返回，否则还是走表达式
         exclusiveGatewayOutgoingFlows.stream().forEach(sequenceFlow -> {
-            if (sequenceFlow.getConditionExpression().contains(Constants.CUSTOM_FUNC)){
-                hasCusExpress.set(true);
-                // 根据ID找到FlowElement
-                FlowElement targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
-                this.getPassElementList(passElements, flowElements, targetElement, variableMap);
+            if (StringUtils.isNotEmpty(sequenceFlow.getConditionExpression())){
+                if (sequenceFlow.getConditionExpression().contains(Constants.CUSTOM_FUNC)){
+                    hasCusExpress.set(true);
+                    // 根据ID找到FlowElement
+                    FlowElement targetElement = getFlowElement(flowElements, sequenceFlow.getTargetRef());
+                    this.getPassElementList(passElements, flowElements, targetElement, variableMap);
+                }
             }
         });
        //没有自定义表达式节点还是走正常的表达式判断
@@ -265,7 +272,16 @@ public class MyProcessServiceImpl implements MyProcessService {
      * @return
      */
     private SequenceFlow getSequenceFlow(Map<String, Object> variableMap, List<SequenceFlow> outgoingFlows) {
-        Optional<SequenceFlow> sequenceFlowOpt = outgoingFlows.stream().filter(item -> {
+        //这段是因为前端传过来的默认表达式是空字符串不是null，为了使用下面的Comparator.nullsLast就做了特殊处理
+        outgoingFlows.stream().forEach(sequenceFlow -> {
+            if (StringUtils.isEmpty(sequenceFlow.getConditionExpression())){
+                sequenceFlow.setConditionExpression(null);
+            }
+        });
+        //对排他网关出来的节点进行排序，把没有表达式的线排到最后来判断，在判断的cmd里面判断是空就直接返回true
+        List<SequenceFlow> outgoingFlowsSort = outgoingFlows.stream().sorted(Comparator.comparing(SequenceFlow::getConditionExpression, Comparator.nullsLast(String::compareTo))).collect(Collectors.toList());
+
+        Optional<SequenceFlow> sequenceFlowOpt = outgoingFlowsSort.stream().filter(item -> {
             try {
                 return this.getElValue(item.getConditionExpression(), variableMap);
             } catch (Exception e) {

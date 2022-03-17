@@ -1,5 +1,6 @@
 package com.cocoamu.flowable.service;
 
+import com.cocoamu.flowable.dto.UpdateElementDto;
 import com.cocoamu.flowable.vo.FlowElementVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -17,7 +18,8 @@ public interface MyProcessService {
      * @param processKey 流程key
      * @return
      */
-    ProcessInstance startProcess(String processKey);
+    ProcessInstance startProcess(String processKey,List<UpdateElementDto> expressList);
+
 
     /**
      * 绘制流程图

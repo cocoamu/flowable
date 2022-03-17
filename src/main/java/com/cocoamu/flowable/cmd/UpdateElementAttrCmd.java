@@ -48,12 +48,14 @@ public class UpdateElementAttrCmd extends AbstractDynamicInjectionCmd implements
         if (!(currentFlowElemet.get() instanceof Task)) {
             throw new FlowableException("task type error");
         }
+        //获取当前节点对象
         Activity activity = (Activity) currentFlowElemet.get();
 
-        ExtensionAttribute ea1 = ExtensionAttributeUtils.generate(Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR + "_key", currentTask.getElementAttr());
+        ExtensionAttribute ea1 = ExtensionAttributeUtils.generate(Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR, currentTask.getElementAttr());
 
         Map<String,List<ExtensionAttribute>> map = new HashMap<>();
-        map.put("FLOWABLE", Arrays.asList(ea1));
+        //这边设置这个data没什么特别的意义，后面代码里也不会根据这个key来取，而是根据userTask.getAttributes()直接取到
+        map.put("data", Arrays.asList(ea1));
 
         activity.setAttributes(map);
 
