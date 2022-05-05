@@ -10,10 +10,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flowable.ui.common.security;
+package com.cocoamu.flowable.util;
 
 import org.flowable.idm.api.User;
 import org.flowable.ui.common.model.RemoteUser;
+import org.flowable.ui.common.security.DefaultPrivileges;
+import org.flowable.ui.common.security.FlowableAppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

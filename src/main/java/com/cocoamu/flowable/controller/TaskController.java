@@ -23,8 +23,8 @@ public class TaskController {
      * @param processId 流程实例id
      * @return
      */
-    @RequestMapping(value = "/getTaskByPid")
-    public List<Map<String, Object>> getTaskByPid(String processId) {
+    @RequestMapping(value = "/getTaskByProcessId")
+    public List<Map<String, Object>> getTaskByProcessId(String processId) {
         return myTaskService.getTaskByPid(processId);
     }
 

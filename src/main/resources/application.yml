@@ -14,9 +14,10 @@ logging:
 
 # flowable 配置
 flowable:
-  # 关闭异步，不关闭历史数据的插入就是异步的，会在同一个事物里面，无法回滚
-  # 开发可开启会提高些效率，上线需要关闭
+  #关闭定时任务JOB
   async-executor-activate: false
+  #为true时当Flowable发现库与数据库表结构不一致时，会自动将数据库表结构升级至新版本，最好改成false，否则 当不同的人更改了flowable的版本，会自动更新表结构。会导致问题。
+  database-schema-update: false
 
 
 mybatis:

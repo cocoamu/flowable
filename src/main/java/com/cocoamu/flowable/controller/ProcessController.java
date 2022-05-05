@@ -5,6 +5,7 @@ import com.cocoamu.flowable.dto.StartProcessDto;
 import com.cocoamu.flowable.service.MyProcessService;
 import com.cocoamu.flowable.service.MyTaskService;
 import com.cocoamu.flowable.vo.ReturnVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,32 +27,19 @@ public class ProcessController {
     private MyTaskService myTaskService;
 
     /**
-     * 开始流程
-     *
-     * @param processKey 流程key
-     * @return
-     */
-    @RequestMapping(value = "/start")
-    public Map<String,Object> startProcess(String processKey) {
-        Map<String,Object> result = new HashMap<>();
-        ProcessInstance processInstance = myProcessService.startProcess(processKey,null);
-        result.put("processInstanceId：",processInstance.getProcessInstanceId());
-        result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
-        return result;
-    }
-
-    /**
      * 开始流程并根据条件动态修改指定环节的扩展属性
      * @param startProcessDto
      * @return
      */
-    @RequestMapping(value = "/startWithExpress")
-    public Map<String,Object> startProcessWithExpress(@RequestBody StartProcessDto startProcessDto) {
+    @RequestMapping(value = "/start")
+    public Map<String,Object> start(@RequestBody StartProcessDto startProcessDto) {
         Map<String,Object> result = new HashMap<>();
         //启动流程
         ProcessInstance processInstance = myProcessService.startProcess(startProcessDto.getProcessKey(),startProcessDto.getExpressList());
-        //动态修改指定节点扩展属性
-        myTaskService.updateSignTask(processInstance.getProcessInstanceId(),startProcessDto.getExpressList());
+        if (CollectionUtils.isNotEmpty(startProcessDto.getExpressList())){
+            //动态修改指定节点扩展属性
+            myTaskService.updateSignTask(processInstance.getProcessInstanceId(),startProcessDto.getExpressList());
+        }
         result.put("processInstanceId：",processInstance.getProcessInstanceId());
         result.put("processDefinitionId：",processInstance.getProcessDefinitionId());
         return result;

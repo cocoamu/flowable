@@ -67,7 +67,7 @@ public class MyProcessServiceImpl implements MyProcessService {
         list.add("红红4");
         map.put("assigneeList", list);
         map.put("signCount", 0);
-        //为了解决第一个节点获取不到表达式的问题
+        //为了其他节点审核人由发起人指定的场景,解决第一个节点获取不到表达式的问题
         if (CollectionUtils.isNotEmpty(expressList)){
             map.put(expressList.get(0).getElementId()+"_"+Constants.CUSTOM_ATTRIBUTES_USER_SELECTOR,expressList.get(0).getElementAttr());
         }
